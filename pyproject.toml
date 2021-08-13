@@ -1,13 +1,18 @@
 [tool.poetry]
 name = "multiverse"
 version = "0.1.0"
-description = ""
-authors = ["Kanishka Misra <menogetusername@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/kanishkamisra/multiverse"
+repository = "https://github.com/kanishkamisra/multiverse"
+description = "A collection of useful utilities."
+authors = ["Kanishka Misra <kanishka.replies@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-torch = "^1.9.0"
+torch = ">1.8.0"
 nltk = "^3.6.2"
+numpy = "^1.21.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
