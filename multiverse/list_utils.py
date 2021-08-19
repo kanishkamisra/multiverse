@@ -6,6 +6,34 @@ from polyleven import levenshtein
 
 from typing import List, Tuple, Optional
 
+from typing import Union
+from itertools import islice
+
+def grouper(lst, k):
+    '''
+        make groups of k elements each from input list:
+        Input:
+            k = 2
+            [1, 2, 3, 4, 5, 6]
+        Output:
+            [[1, 2], [3, 4], [5, 6]]
+
+        it's like unflatten with uniform length, lmao.
+    '''
+    assert k >= 2 and len(lst) % k == 0
+    result = [lst[i:i+k] for i in range(0, len(lst)-1, k)]
+    return result
+
+def unflatten(lst: list, lens: Union[list, tuple]):
+    '''
+        unflatten a list by length.
+    '''
+    tmp = iter(lst)
+    unflattened = [list(islice(tmp, l)) for l in lens]
+    
+    return unflattened
+
+
 def get_batch(data: list, batch_size: int, shuffle: bool = False):
     if shuffle:
         random.shuffle(data)
