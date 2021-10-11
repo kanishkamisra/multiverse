@@ -3,7 +3,7 @@ import numpy as np
 from tqdm import tqdm
 from collections import defaultdict
 from typing import List, Tuple, Union, Callable
-from .vsm_utils import cosine
+from .vsm_utils import cosine, jaccard
 
 class VectorSpaceModel(object):
     '''
@@ -57,7 +57,7 @@ class VectorSpaceModel(object):
         self.shape = self.embeddings.shape
         self.idx2vocab = {v: k for k, v in self.vocab2idx.items()}
     
-    def neighbor(self, word: Union[list, str], k: int, space: list = None, names_only = False, ignore_first: bool = True, nearest = True) -> List:
+    def neighbor(self, word: Union[list, str], k: int, space: list = None, names_only = False, ignore_first: bool = True, nearest = True, sim_function: Callable = cosine) -> List:
         words = [word] if isinstance(word, str) else word
         idx = [self.vocab2idx[w] for w in words]
         query = self.embeddings[idx]
@@ -68,20 +68,20 @@ class VectorSpaceModel(object):
         else:
             space_idx = range(self.vocab_size)
             idx2vocab = self.idx2vocab
-        cosines = cosine(query, self.embeddings[space_idx])
+        similarities = sim_function(query, self.embeddings[space_idx])
         # by default always ignore first element as it will be the same.
         if nearest:
             if ignore_first:
-                topk = cosines.topk(k+1)
+                topk = similarities.topk(k+1)
                 values = topk.values[:, None][:, :, 1:].squeeze().tolist()
                 indices = topk.indices[:, None][:, :, 1:].squeeze()
             else:
-                topk = cosines.topk(k)
+                topk = similarities.topk(k)
                 values = topk.values.tolist()
                 indices = topk.indices
         else:
             # farthest neighbors
-            topk = (1.0 - cosines).topk(k)
+            topk = (1.0 - similarities).topk(k)
             values = topk.values.tolist()
             indices = topk.indices
 
@@ -109,12 +109,12 @@ class VectorSpaceModel(object):
                 neighbors = [list(zip(name, sim)) for name, sim in zip(names, values)]
         return neighbors
 
-    def pairwise(self, words:list) -> torch.Tensor:
+    def pairwise(self, words:list, sim_function: Callable = cosine) -> torch.Tensor:
         assert len(words) > 1
 
         idx = [self.vocab2idx[w] for w in words]
         query = self.embeddings[idx]
-        sim_matrix = cosine(query, query)
+        sim_matrix = sim_function(query, query)
         return sim_matrix
         
     def from_tensor(self, vectors: torch.Tensor, vocab: list) -> None:
