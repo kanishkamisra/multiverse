@@ -1,7 +1,6 @@
 import random
 import re
 import string
-import torch
 from polyleven import levenshtein
 
 from typing import List, Tuple, Optional
@@ -33,7 +32,6 @@ def unflatten(lst: list, lens: Union[list, tuple]):
     
     return unflattened
 
-
 def get_batch(data: list, batch_size: int, shuffle: bool = False):
     if shuffle:
         random.shuffle(data)
@@ -49,7 +47,6 @@ def get_batch(data: list, batch_size: int, shuffle: bool = False):
     if eindex >= len(data):
         batch = data[sindex:]
         yield batch
-
 
 def find_pattern(pieces: List, whole: List) -> Tuple:
     num_pieces = len(pieces)
@@ -96,7 +93,6 @@ def find_paired_indices(context: str, word1: str, word2: str, importance: int = 
         idx1 = find_index(context.replace(word2, replace_cand), word1)
     
     return idx1, idx2
-
 
 def mask(sentence: str, word: str) -> str:
     replaced = re.sub(rf'(?<![\w\/-])({word})(?=[^\w\/-])', '[MASK]', sentence)
