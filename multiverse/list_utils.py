@@ -94,7 +94,8 @@ def find_paired_indices(context: str, word1: str, word2: str, importance: int = 
     
     return idx1, idx2
 
-def mask(sentence: str, word: str) -> str:
-    replaced = re.sub(rf'(?<![\w\/-])({word})(?=[^\w\/-])', '[MASK]', sentence)
-    masked = ['[CLS]'] + [replaced] + ['[SEP]']
-    return ' '.join(masked)
+def intersect(lists):
+    '''
+    Intersection between arbitrary number of lists
+    '''
+    return sorted(set.intersection(*map(set, lists)), key = lists[0].index)

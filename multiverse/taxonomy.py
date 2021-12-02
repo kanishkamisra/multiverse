@@ -1,4 +1,5 @@
 from collections import defaultdict
+from .list_utils import intersect
 
 class Node:
     def __init__(self, value: str):
@@ -57,6 +58,10 @@ class Node:
             return siblings
 
     def depth(self):
+        path = self.path()
+        return len(path)
+
+    def height(self):
         if self == None:
             return 0
         elif self.children == []:
@@ -79,3 +84,6 @@ class Nodeset(defaultdict):
         except AssertionError:
             raise AssertionError("Nodeset currently empty!")
         return list(self.values())[0]
+
+    def lcs(self, nodes):
+        return intersect([self[node].path() for node in nodes])[0]
