@@ -87,3 +87,34 @@ class Nodeset(defaultdict):
 
     def lcs(self, nodes):
         return intersect([self[node].path() for node in nodes])[0]
+
+    def wup_sim(self, node1, node2):
+        '''
+        Generic Wu-Palmer Similarity
+        '''
+        lcs = self.lcs([node1, node2])
+        lcs_depth = self[lcs].depth()
+
+        depth1 = self[node1].depth()
+        depth2 = self[node2].depth()
+        avg_depth = (depth1 + depth2)/2
+
+        return lcs_depth/(avg_depth)
+    
+    def generalized_wup_sim(self, nodes):
+        '''
+        Generalized Wu-Palmer Similarity
+        '''
+        lcs = self.lcs(nodes)
+        lcs_depth = self[lcs].depth()
+
+        depths = [self[node].depth() for node in nodes]
+        avg_depth = sum(depths)/len(depths)
+
+        return lcs_depth/(avg_depth)
+
+    def path_len_sim(self, node1, node2):
+        '''
+        Path-len similarity between two nodes
+        '''
+        raise NotImplementedError
