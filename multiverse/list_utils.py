@@ -1,7 +1,6 @@
 import random
 import re
 import string
-from polyleven import levenshtein
 
 from typing import List, Tuple, Optional
 
@@ -62,10 +61,11 @@ def argmax(lst: List) -> int:
   
 def find_index(context: str, word: str, method: Optional[str] = "regular") -> Tuple[int, int]:
     if method == "edit":
-        tokenized = context.split()
-        editdists = [levenshtein(w, word) for w in tokenized]
+        # tokenized = context.split()
+        # editdists = [levenshtein(w, word) for w in tokenized]
         
-        index = argmin(editdists)
+        # index = argmin(editdists)
+        raise NotImplementedError
     else:
         # prefix, postfix = context.split(word)
         prefix, postfix = re.split(fr"\b{word}\b", context)
