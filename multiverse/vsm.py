@@ -26,6 +26,19 @@ class VectorSpaceModel(object):
         key = [self.vocab2idx[w] for w in words]
         return self.embeddings[key]
 
+    def load_vectors_from_tensor(self, weights, vocab) -> None:
+        self.embeddings = weights
+        self.vocab = vocab
+        self.vocab_size = len(vocab)
+        self.dimensions = self.embeddings.shape[1]
+
+        for item in vocab:
+            _ = self.vocab2idx[item]
+        self.vocab2idx.default_factory = None
+        self.idx2vocab = {v: k for k, v in self.vocab2idx.items()}
+        
+        self.shape = self.embeddings.shape
+
     def load_vectors(self, file, data_type = 'float32', quotes = False, ignore_first = False) -> None:
         self.embeddings = {}
         with open(file) as f:
@@ -57,10 +70,16 @@ class VectorSpaceModel(object):
         self.shape = self.embeddings.shape
         self.idx2vocab = {v: k for k, v in self.vocab2idx.items()}
     
-    def neighbor(self, word: Union[list, str], k: int, space: list = None, names_only = False, ignore_first: bool = True, nearest = True, sim_function: Callable = cosine) -> List:
-        words = [word] if isinstance(word, str) else word
-        idx = [self.vocab2idx[w] for w in words]
-        query = self.embeddings[idx]
+    def neighbor(self, word: Union[list, str, torch.Tensor], k: int, space: list = None, names_only = False, ignore_first: bool = True, nearest = True, sim_function: Callable = cosine) -> List:
+
+        if isinstance(word, list) or isinstance(word, str):
+            words = [word] if isinstance(word, str) else word
+            idx = [self.vocab2idx[w] for w in words]
+            query = self.embeddings[idx]
+        elif isinstance(word, torch.Tensor):
+            query = word
+        else:
+            raise TypeError("Only accepts list, string, or nxd tensors!")
         if space is not None:
             space_idx = [self.vocab2idx[w] for w in space]
             # idx2vocab = {k:self.idx2vocab[k] for k in [self.vocab2idx[x] for x in space]}
